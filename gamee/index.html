@@ -55,6 +55,66 @@
             border-radius: 10px;
             color: rgb(237, 237, 202)
         }
+
+        /* From Uiverse.io by barisdogansutcu */
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 10px;
+            color: rgb(237, 237, 202);
+            text-shadow: 2px 2px rgb(116, 116, 116);
+            text-transform: uppercase;
+            border: 3px solid rgb(162, 14, 61);
+            cursor: pointer;
+            letter-spacing: 1px;
+            font-weight: 600;
+            font-size: 30px;
+            font-family: 'Luckiest Guy', cursive;
+            background-color: transparent;
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        button:active {
+            transform: scale(0.9);
+            transition: all 100ms ease;
+        }
+
+        button img {
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+
+        .play {
+            transition: all 0.5s ease;
+            transition-delay: 300ms;
+        }
+
+        button:hover img {
+            transform: scale(3) translate(120%);
+        }
+
+        .now {
+            position: absolute;
+            left: 0;
+            transform: translateX(-100%);
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+
+        button:hover .now {
+            transform: translateX(10px);
+            transition-delay: 300ms;
+        }
+
+        button:hover .play {
+            transform: translateX(200%);
+            transition-delay: 300ms;
+        }
     </style>
 </head>
 
@@ -70,9 +130,15 @@
                 You have 120 seconds to score as many points as possible. <br><br>
             </p>
             <br>
-            <button id="startButton">
-                Play
-            </button>
+            <div style="display: flex;align-items: center;justify-content: center;">
+                <button id="startButton">
+                    <img src="./assets/jim-jam.png" style="height: 25px;" alt="">
+                    <span class="now">now!</span>
+                    <span class="play">play</span>
+                </button>
+            </div>
+
+
         </div>
     </div>
     <div id="gameArea" style="display: none;">
