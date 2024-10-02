@@ -1,32 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cheerful Biscuit Stacker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            touch-action: none;
-            font-family: 'Luckiest Guy', cursive;
-            /* Updated font family */
-        }
-
+        body { margin: 0; overflow: hidden; touch-action: none; }
         #info {
             position: absolute;
             top: 10px;
             width: 100%;
             text-align: center;
-            font-size: x-large;
-            font-family: 'Luckiest Guy', cursive;
-            color: rgb(237, 237, 202);
-            /* Updated font family */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: #FF4500;
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
-
         #backgroundImage {
             position: fixed;
             top: 0;
@@ -36,61 +25,25 @@
             z-index: -1;
             object-fit: cover;
         }
-
-        #landingPage {
-            background-image: url('./assets/home-bg.jpg');
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            /* align-items: center; */
-            width: 100vw;
-            height: 100vh;
-        }
-
-        #startButton {
-            font-family: 'Luckiest Guy', cursive;
-            font-size: xx-large;
-            background-color: transparent;
-            border: 5px solid rgb(162, 14, 61);
-            border-radius: 10px;
-            color: rgb(237, 237, 202)
-        }
     </style>
 </head>
-
 <body>
-    <div id="landingPage">
-        <div style="text-align: center;">
-            <img src="./assets/logo.png" alt="Logo" style="height: 100px;margin-top: 10vh;">
-            <p>
-                Move your mouse or finger to control the plate at the bottom of the screen. <br><br>
-                Catch falling biscuit pieces in the correct order: base, cream, and top. <br><br>
-                Stack three pieces correctly to score a point. <br><br>
-                If you catch a piece in the wrong order, your stack will fall off! <br><br>
-                You have 120 seconds to score as many points as possible. <br><br>
-            </p>
-            <br>
-            <button id="startButton">
-                Play
-            </button>
-        </div>
-    </div>
-    <div id="gameArea" style="display: none;">
-        <img id="backgroundImage" src="assets/home-bg.jpg" alt="Background">
-        <div id="info">Score: <span id="score">0</span> | Time: <span id="time">120</span></div>
-    </div>
+    <img id="backgroundImage" src="assets/background.jpg" alt="Background">
+    <div id="info">Score: <span id="score">0</span> | Time: <span id="time">120</span></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <script>
         let scene, camera, renderer, plate, score = 0, timeLeft = 120;
         let fallingObjects = [];
         const plateStack = [];
+        let screenWidth, screenHeight;
 
         function init() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            updateScreenDimensions();
+            camera = new THREE.PerspectiveCamera(75, screenWidth / screenHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(screenWidth, screenHeight);
             renderer.setClearColor(0x000000, 0);
             document.body.appendChild(renderer.domElement);
 
@@ -106,7 +59,6 @@
 
             camera.position.z = 5;
 
-            // Add both mouse and touch event listeners
             document.addEventListener('mousemove', onPointerMove);
             document.addEventListener('touchmove', onPointerMove);
             document.addEventListener('touchstart', onPointerMove);
@@ -114,8 +66,12 @@
             setInterval(createFallingObject, 1000);
             setInterval(updateTimer, 1000);
 
-            // Handle window resizing
             window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function updateScreenDimensions() {
+            screenWidth = window.innerWidth;
+            screenHeight = window.innerHeight;
         }
 
         function createPlate() {
@@ -131,7 +87,7 @@
             const type = types[Math.floor(Math.random() * types.length)];
             let object;
 
-            switch (type) {
+            switch(type) {
                 case 'base':
                     object = createBase();
                     break;
@@ -144,7 +100,8 @@
             }
 
             object.userData.type = type;
-            object.position.set((Math.random() - 0.5) * 3, 3, 0);
+            const maxX = 2.5; // Adjust this value to control the spawn width
+            object.position.set((Math.random() - 0.5) * maxX * 2, 3, 0);
             fallingObjects.push(object);
             scene.add(object);
         }
@@ -188,13 +145,12 @@
                 clientX = event.clientX;
             }
 
-            const x = (clientX / window.innerWidth) * 2 - 1;
-            const newX = x * 3;
-            const deltaX = newX - plate.position.x;
-            plate.position.x = newX;
+            const x = (clientX / screenWidth) * 2 - 1;
+            const maxX = 2.5; // Adjust this value to match the spawn width
+            plate.position.x = THREE.MathUtils.clamp(x * 3, -maxX, maxX);
 
             plateStack.forEach(obj => {
-                obj.position.x += deltaX;
+                obj.position.x = plate.position.x;
             });
         }
 
@@ -233,7 +189,7 @@
                         if (plateStack.length === 3) {
                             score++;
                             document.getElementById('score').textContent = score;
-
+                            
                             plateStack.forEach((stackObj, i) => {
                                 new TWEEN.Tween(stackObj.position)
                                     .to({ y: stackObj.position.y + 1 }, 500)
@@ -282,18 +238,14 @@
         }
 
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            updateScreenDimensions();
+            camera.aspect = screenWidth / screenHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(screenWidth, screenHeight);
         }
 
-        document.getElementById('startButton').addEventListener('click', function () {
-            document.getElementById('landingPage').style.display = 'none';
-            document.getElementById('gameArea').style.display = 'block';
-            init();
-            animate();
-        });
+        init();
+        animate();
     </script>
 </body>
-
 </html>
