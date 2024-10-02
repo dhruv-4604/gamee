@@ -12,6 +12,7 @@
             overflow: hidden;
             touch-action: none;
             font-family: 'Luckiest Guy', cursive;
+            /* Updated font family */
         }
 
         #info {
@@ -19,9 +20,10 @@
             top: 10px;
             width: 100%;
             text-align: center;
-            font-size: 5vw;
+            font-size: x-large;
             font-family: 'Luckiest Guy', cursive;
             color: rgb(237, 237, 202);
+            /* Updated font family */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
@@ -35,58 +37,31 @@
             object-fit: cover;
         }
 
-        #landingPage,
-        #endPage {
+        #landingPage {
             background-image: url('./assets/home-bg.jpg');
             background-size: cover;
             display: flex;
             justify-content: center;
-            align-items: center;
+            /* align-items: center; */
             width: 100vw;
             height: 100vh;
-            overflow-y: auto;
         }
 
-        #landingContent {
-            text-align: center;
-            padding: 20px;
-            max-width: 90%;
-            color: rgb(237, 237, 202);
-        }
-
-        #landingContent img {
-            max-width: 100%;
-            height: auto;
-            max-height: 20vh;
-            margin-bottom: 5vh;
-        }
-
-        #landingContent p {
-            font-size: 3vw;
-            line-height: 1.5;
-            margin-bottom: 5vh;
-        }
-
-
-
-        #startButton,
-        #restartButton {
+        #startButton {
             font-family: 'Luckiest Guy', cursive;
-            font-size: 5vw;
+            font-size: xx-large;
             background-color: transparent;
             border: 5px solid rgb(162, 14, 61);
             border-radius: 10px;
-            color: rgb(237, 237, 202);
-            padding: 10px 20px;
-            cursor: pointer;
+            color: rgb(237, 237, 202)
         }
     </style>
 </head>
 
 <body>
     <div id="landingPage">
-        <div id="landingContent">
-            <img src="./assets/logo.png" alt="Logo">
+        <div style="text-align: center;">
+            <img src="./assets/logo.png" alt="Logo" style="height: 100px;margin-top: 10vh;">
             <p>
                 Move your mouse or finger to control the plate at the bottom of the screen. <br><br>
                 Catch falling biscuit pieces in the correct order: base, cream, and top. <br><br>
@@ -94,16 +69,10 @@
                 If you catch a piece in the wrong order, your stack will fall off! <br><br>
                 You have 120 seconds to score as many points as possible. <br><br>
             </p>
+            <br>
             <button id="startButton">
                 Play
             </button>
-        </div>
-    </div>
-    <div id="endPage" style="display: none; text-align: center;">
-        <div>
-            <h1>Game Over!</h1>
-            <p>Your score: <span id="finalScore">0</span></p>
-            <button id="restartButton">Restart</button>
         </div>
     </div>
     <div id="gameArea" style="display: none;">
@@ -113,7 +82,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <script>
-        let scene, camera, renderer, plate, score = 0, timeLeft = 1;
+        let scene, camera, renderer, plate, score = 0, timeLeft = 120;
         let fallingObjects = [];
         const plateStack = [];
 
@@ -139,8 +108,8 @@
 
             // Add both mouse and touch event listeners
             document.addEventListener('mousemove', onPointerMove);
-            document.addEventListener('touchmove', onPointerMove, { passive: false });
-            document.addEventListener('touchstart', onPointerMove, { passive: false });
+            document.addEventListener('touchmove', onPointerMove);
+            document.addEventListener('touchstart', onPointerMove);
 
             setInterval(createFallingObject, 1000);
             setInterval(updateTimer, 1000);
@@ -233,9 +202,8 @@
             timeLeft--;
             document.getElementById('time').textContent = timeLeft;
             if (timeLeft <= 0) {
-                document.getElementById('finalScore').textContent = score; // Update final score
-                document.getElementById('gameArea').style.display = 'none'; // Hide game area
-                document.getElementById('endPage').style.display = 'block'; // Show end page
+                alert(`Game Over! Your score: ${score}`);
+                location.reload();
             }
         }
 
@@ -324,10 +292,6 @@
             document.getElementById('gameArea').style.display = 'block';
             init();
             animate();
-        });
-
-        document.getElementById('restartButton').addEventListener('click', function () {
-            location.reload(); // Reload the page to restart the game
         });
     </script>
 </body>
