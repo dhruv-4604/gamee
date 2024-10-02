@@ -12,7 +12,6 @@
             overflow: hidden;
             touch-action: none;
             font-family: 'Luckiest Guy', cursive;
-            /* Updated font family */
         }
 
         #info {
@@ -20,10 +19,9 @@
             top: 10px;
             width: 100%;
             text-align: center;
-            font-size: x-large;
+            font-size: 1.2rem;
             font-family: 'Luckiest Guy', cursive;
             color: rgb(237, 237, 202);
-            /* Updated font family */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
@@ -42,34 +40,53 @@
             background-size: cover;
             display: flex;
             justify-content: center;
-            /* align-items: center; */
             width: 100vw;
             height: 100vh;
+            overflow-y: auto;
         }
 
         #startButton {
             font-family: 'Luckiest Guy', cursive;
-            font-size: xx-large;
+            font-size: 1.5rem;
             background-color: transparent;
             border: 5px solid rgb(162, 14, 61);
             border-radius: 10px;
-            color: rgb(237, 237, 202)
+            color: rgb(237, 237, 202);
+            padding: 10px 20px;
+            margin-top: 20px;
+        }
+
+        #landingContent {
+            text-align: center;
+            padding: 20px;
+            max-width: 90%;
+        }
+
+        #landingContent img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 5vh;
+        }
+
+        #landingContent p {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: rgb(237, 237, 202);
         }
     </style>
 </head>
 
 <body>
     <div id="landingPage">
-        <div style="text-align: center;">
-            <img src="./assets/logo.png" alt="Logo" style="height: 100px;margin-top: 10vh;">
+        <div id="landingContent">
+            <img src="./assets/logo.png" alt="Logo" style="max-height: 100px;">
             <p>
-                Move your mouse or finger to control the plate at the bottom of the screen. <br><br>
+                Move your finger to control the plate at the bottom of the screen. <br><br>
                 Catch falling biscuit pieces in the correct order: base, cream, and top. <br><br>
                 Stack three pieces correctly to score a point. <br><br>
                 If you catch a piece in the wrong order, your stack will fall off! <br><br>
                 You have 120 seconds to score as many points as possible. <br><br>
             </p>
-            <br>
             <button id="startButton">
                 Play
             </button>
@@ -85,6 +102,7 @@
         let scene, camera, renderer, plate, score = 0, timeLeft = 120;
         let fallingObjects = [];
         const plateStack = [];
+        let plateWidth;
 
         function init() {
             scene = new THREE.Scene();
@@ -108,14 +126,19 @@
 
             // Add both mouse and touch event listeners
             document.addEventListener('mousemove', onPointerMove);
-            document.addEventListener('touchmove', onPointerMove);
-            document.addEventListener('touchstart', onPointerMove);
+            document.addEventListener('touchmove', onPointerMove, { passive: false });
+            document.addEventListener('touchstart', onPointerMove, { passive: false });
 
             setInterval(createFallingObject, 1000);
             setInterval(updateTimer, 1000);
 
             // Handle window resizing
             window.addEventListener('resize', onWindowResize, false);
+
+            // Calculate plate width in world units
+            const plateGeometry = plate.geometry;
+            const boundingBox = new THREE.Box3().setFromObject(plate);
+            plateWidth = boundingBox.max.x - boundingBox.min.x;
         }
 
         function createPlate() {
@@ -190,8 +213,13 @@
 
             const x = (clientX / window.innerWidth) * 2 - 1;
             const newX = x * 3;
-            const deltaX = newX - plate.position.x;
-            plate.position.x = newX;
+
+            // Calculate the maximum allowed position based on the plate width and camera frustum
+            const maxX = (camera.aspect * camera.fov / 2) * Math.PI / 180;
+            const clampedX = Math.max(-maxX + plateWidth / 2, Math.min(maxX - plateWidth / 2, newX));
+
+            const deltaX = clampedX - plate.position.x;
+            plate.position.x = clampedX;
 
             plateStack.forEach(obj => {
                 obj.position.x += deltaX;
