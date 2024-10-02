@@ -37,7 +37,8 @@
             object-fit: cover;
         }
 
-        #landingPage {
+        #landingPage,
+        #endPage {
             background-image: url('./assets/home-bg.jpg');
             background-size: cover;
             display: flex;
@@ -47,7 +48,10 @@
             height: 100vh;
         }
 
-        #startButton {
+
+
+        #startButton,
+        #restartButton {
             font-family: 'Luckiest Guy', cursive;
             font-size: xx-large;
             background-color: transparent;
@@ -75,6 +79,13 @@
             </button>
         </div>
     </div>
+    <div id="endPage" style="display: none; text-align: center;">
+        <div>
+            <h1>Game Over!</h1>
+            <p>Your score: <span id="finalScore">0</span></p>
+            <button id="restartButton">Restart</button>
+        </div>
+    </div>
     <div id="gameArea" style="display: none;">
         <img id="backgroundImage" src="assets/home-bg.jpg" alt="Background">
         <div id="info">Score: <span id="score">0</span> | Time: <span id="time">120</span></div>
@@ -82,7 +93,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <script>
-        let scene, camera, renderer, plate, score = 0, timeLeft = 120;
+        let scene, camera, renderer, plate, score = 0, timeLeft = 1;
         let fallingObjects = [];
         const plateStack = [];
 
@@ -202,8 +213,9 @@
             timeLeft--;
             document.getElementById('time').textContent = timeLeft;
             if (timeLeft <= 0) {
-                alert(`Game Over! Your score: ${score}`);
-                location.reload();
+                document.getElementById('finalScore').textContent = score; // Update final score
+                document.getElementById('gameArea').style.display = 'none'; // Hide game area
+                document.getElementById('endPage').style.display = 'block'; // Show end page
             }
         }
 
@@ -292,6 +304,10 @@
             document.getElementById('gameArea').style.display = 'block';
             init();
             animate();
+        });
+
+        document.getElementById('restartButton').addEventListener('click', function () {
+            location.reload(); // Reload the page to restart the game
         });
     </script>
 </body>
