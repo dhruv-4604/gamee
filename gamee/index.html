@@ -19,7 +19,7 @@
             top: 10px;
             width: 100%;
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 5vw;
             font-family: 'Luckiest Guy', cursive;
             color: rgb(237, 237, 202);
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -40,38 +40,41 @@
             background-size: cover;
             display: flex;
             justify-content: center;
+            align-items: center;
             width: 100vw;
             height: 100vh;
             overflow-y: auto;
-        }
-
-        #startButton {
-            font-family: 'Luckiest Guy', cursive;
-            font-size: 1.5rem;
-            background-color: transparent;
-            border: 5px solid rgb(162, 14, 61);
-            border-radius: 10px;
-            color: rgb(237, 237, 202);
-            padding: 10px 20px;
-            margin-top: 20px;
         }
 
         #landingContent {
             text-align: center;
             padding: 20px;
             max-width: 90%;
+            color: rgb(237, 237, 202);
         }
 
         #landingContent img {
             max-width: 100%;
             height: auto;
-            margin-top: 5vh;
+            max-height: 20vh;
+            margin-bottom: 5vh;
         }
 
         #landingContent p {
-            font-size: 1rem;
+            font-size: 3vw;
             line-height: 1.5;
+            margin-bottom: 5vh;
+        }
+
+        #startButton {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 5vw;
+            background-color: transparent;
+            border: 5px solid rgb(162, 14, 61);
+            border-radius: 10px;
             color: rgb(237, 237, 202);
+            padding: 10px 20px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -79,9 +82,9 @@
 <body>
     <div id="landingPage">
         <div id="landingContent">
-            <img src="./assets/logo.png" alt="Logo" style="max-height: 100px;">
+            <img src="./assets/logo.png" alt="Logo">
             <p>
-                Move your finger to control the plate at the bottom of the screen. <br><br>
+                Move your mouse or finger to control the plate at the bottom of the screen. <br><br>
                 Catch falling biscuit pieces in the correct order: base, cream, and top. <br><br>
                 Stack three pieces correctly to score a point. <br><br>
                 If you catch a piece in the wrong order, your stack will fall off! <br><br>
@@ -102,7 +105,6 @@
         let scene, camera, renderer, plate, score = 0, timeLeft = 120;
         let fallingObjects = [];
         const plateStack = [];
-        let plateWidth;
 
         function init() {
             scene = new THREE.Scene();
@@ -134,11 +136,6 @@
 
             // Handle window resizing
             window.addEventListener('resize', onWindowResize, false);
-
-            // Calculate plate width in world units
-            const plateGeometry = plate.geometry;
-            const boundingBox = new THREE.Box3().setFromObject(plate);
-            plateWidth = boundingBox.max.x - boundingBox.min.x;
         }
 
         function createPlate() {
@@ -213,13 +210,8 @@
 
             const x = (clientX / window.innerWidth) * 2 - 1;
             const newX = x * 3;
-
-            // Calculate the maximum allowed position based on the plate width and camera frustum
-            const maxX = (camera.aspect * camera.fov / 2) * Math.PI / 180;
-            const clampedX = Math.max(-maxX + plateWidth / 2, Math.min(maxX - plateWidth / 2, newX));
-
-            const deltaX = clampedX - plate.position.x;
-            plate.position.x = clampedX;
+            const deltaX = newX - plate.position.x;
+            plate.position.x = newX;
 
             plateStack.forEach(obj => {
                 obj.position.x += deltaX;
