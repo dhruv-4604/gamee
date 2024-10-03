@@ -12,7 +12,6 @@
             overflow: hidden;
             touch-action: none;
             font-family: 'Luckiest Guy', cursive;
-            /* Updated font family */
         }
 
         #info {
@@ -23,7 +22,6 @@
             font-size: x-large;
             font-family: 'Luckiest Guy', cursive;
             color: rgb(237, 237, 202);
-            /* Updated font family */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
@@ -37,23 +35,25 @@
             object-fit: cover;
         }
 
-        #landingPage {
+        #landingPage,
+        #endingPage {
             background-image: url('./assets/home-bg.jpg');
             background-size: cover;
             display: flex;
             justify-content: center;
-            /* align-items: center; */
             width: 100vw;
             height: 100vh;
         }
 
-        #startButton {
+        #startButton,
+        #playAgainButton,
+        #homeButton {
             font-family: 'Luckiest Guy', cursive;
             font-size: xx-large;
             background-color: transparent;
             border: 5px solid rgb(162, 14, 61);
             border-radius: 10px;
-            color: rgb(237, 237, 202)
+            color: rgb(237, 237, 202);
         }
 
         /* From Uiverse.io by barisdogansutcu */
@@ -115,6 +115,26 @@
             transform: translateX(200%);
             transition-delay: 300ms;
         }
+
+        #endingPage {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #finalScore {
+            font-size: 48px;
+            color: rgb(237, 237, 202);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        #endingButtons {
+            display: flex;
+            gap: 20px;
+        }
     </style>
 </head>
 
@@ -137,20 +157,33 @@
                     <span class="play">play</span>
                 </button>
             </div>
-
-
         </div>
     </div>
     <div id="gameArea" style="display: none;">
         <img id="backgroundImage" src="assets/home-bg.jpg" alt="Background">
         <div id="info">Score: <span id="score">0</span> | Time: <span id="time">120</span></div>
     </div>
+    <div id="endingPage">
+        <div id="finalScore">Your Final Score: <span id="endScore"></span></div>
+        <div id="endingButtons">
+            <button id="playAgainButton">
+                <img src="./assets/jim-jam.png" style="height: 25px;" alt="">
+                <span class="now">again!</span>
+                <span class="play">play</span>
+            </button>
+
+        </div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+
     <script>
+        const homeAudio = new Audio('./assets/On The Jazz.mp3');
+        homeAudio.loop = true;
         let scene, camera, renderer, plate, score = 0, timeLeft = 120;
         let fallingObjects = [];
         const plateStack = [];
+        let gameAudio;
 
         function init() {
             scene = new THREE.Scene();
@@ -172,7 +205,6 @@
 
             camera.position.z = 5;
 
-            // Add both mouse and touch event listeners
             document.addEventListener('mousemove', onPointerMove);
             document.addEventListener('touchmove', onPointerMove);
             document.addEventListener('touchstart', onPointerMove);
@@ -180,7 +212,6 @@
             setInterval(createFallingObject, 1000);
             setInterval(updateTimer, 1000);
 
-            // Handle window resizing
             window.addEventListener('resize', onWindowResize, false);
         }
 
@@ -268,9 +299,16 @@
             timeLeft--;
             document.getElementById('time').textContent = timeLeft;
             if (timeLeft <= 0) {
-                alert(`Game Over! Your score: ${score}`);
-                location.reload();
+                endGame();
             }
+        }
+
+        function endGame() {
+            gameAudio.pause();
+            homeAudio.play();
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('endingPage').style.display = 'flex';
+            document.getElementById('endScore').textContent = score;
         }
 
         function animate(time) {
@@ -353,11 +391,29 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        document.getElementById('startButton').addEventListener('click', function () {
+        function startGame() {
+            homeAudio.pause();
+            gameAudio = new Audio('./assets/Ukulele Whistle.wav');
+            gameAudio.loop = true;
+            gameAudio.play();
+
             document.getElementById('landingPage').style.display = 'none';
             document.getElementById('gameArea').style.display = 'block';
             init();
             animate();
+        }
+
+        document.getElementById('startButton').addEventListener('click', startGame);
+        document.getElementById('playAgainButton').addEventListener('click', function () {
+            score = 0;
+            timeLeft = 120;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('time').textContent = '120';
+            document.getElementById('endingPage').style.display = 'none';
+            startGame();
+        });
+        document.getElementById('homeButton').addEventListener('click', function () {
+            location.reload();
         });
     </script>
 </body>
