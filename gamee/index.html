@@ -46,6 +46,7 @@
         }
 
         #startButton,
+        #restartButton,
         #playAgainButton,
         #homeButton {
             font-family: 'Luckiest Guy', cursive;
@@ -160,13 +161,13 @@
         </div>
     </div>
     <div id="gameArea" style="display: none;">
-        <img id="backgroundImage" src="assets/home-bg.jpg" alt="Background">
+        <img id="backgroundImage" src="assets/game-bg.jpg" alt="Background">
         <div id="info">Score: <span id="score">0</span> | Time: <span id="time">120</span></div>
     </div>
     <div id="endingPage">
         <div id="finalScore">Your Final Score: <span id="endScore"></span></div>
         <div id="endingButtons">
-            <button id="playAgainButton">
+            <button id="restartButton">
                 <img src="./assets/jim-jam.png" style="height: 25px;" alt="">
                 <span class="now">again!</span>
                 <span class="play">play</span>
@@ -178,7 +179,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
     <script>
-        const homeAudio = new Audio('./assets/On The Jazz.mp3');
+        const homeAudio = new Audio('./assets/Jim-Jam Stacking Game.mp3');
+        homeAudio.play();
         homeAudio.loop = true;
         let scene, camera, renderer, plate, score = 0, timeLeft = 120;
         let fallingObjects = [];
@@ -404,6 +406,7 @@
         }
 
         document.getElementById('startButton').addEventListener('click', startGame);
+        document.getElementById('restartButton').addEventListener('click', startGame);
         document.getElementById('playAgainButton').addEventListener('click', function () {
             score = 0;
             timeLeft = 120;
