@@ -45,6 +45,14 @@
             height: 100vh;
         }
 
+        @media (max-width: 768px) {
+
+            #landingPage,
+            #endingPage {
+                background-image: url('./assets/home-bg-mobile.jpg');
+            }
+        }
+
         #startButton,
         #restartButton,
         #playAgainButton,
@@ -141,7 +149,7 @@
             top: 10px;
             right: 10px;
             z-index: 1000;
-            background-color: rgba(255, 255, 255, 0.7);
+            background-color: transparent;
             border: none;
             border-radius: 50%;
             width: 50px;
@@ -152,10 +160,6 @@
             justify-content: center;
             align-items: center;
             transition: background-color 0.3s;
-        }
-
-        #musicToggle:hover {
-            background-color: rgba(255, 255, 255, 0.9);
         }
     </style>
 </head>
@@ -212,6 +216,29 @@
             let isMusicPlaying = true;
 
             const musicToggle = document.getElementById('musicToggle');
+
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
+
+            function setBackgroundImage() {
+                const landingPage = document.getElementById('landingPage');
+                const endingPage = document.getElementById('endingPage');
+                const gameAreaBg = document.getElementById('backgroundImage');
+
+                if (isMobile()) {
+                    landingPage.style.backgroundImage = "url('./assets/home-bg-mobile.jpg')";
+                    endingPage.style.backgroundImage = "url('./assets/home-bg-mobile.jpg')";
+                    gameAreaBg.src = "assets/game-bg-mobile.jpg";
+                } else {
+                    landingPage.style.backgroundImage = "url('./assets/home-bg.jpg')";
+                    endingPage.style.backgroundImage = "url('./assets/home-bg.jpg')";
+                    gameAreaBg.src = "assets/game-bg.jpg";
+                }
+            }
+
+            setBackgroundImage();
+            window.addEventListener('resize', setBackgroundImage);
 
             function toggleMusic() {
                 if (isMusicPlaying) {
@@ -435,6 +462,7 @@
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
+                setBackgroundImage();
             }
 
             function startGame() {
