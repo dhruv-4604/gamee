@@ -168,6 +168,7 @@
     <button id="musicToggle">🔊</button>
 
     <div id="landingPage">
+
         <div style="text-align: center;">
             <img src="./assets/logo.png" alt="Logo" style="height: 100px;margin-top: 10vh;">
             <p>
@@ -478,8 +479,7 @@
             }
 
             document.getElementById('startButton').addEventListener('click', startGame);
-            document.getElementById('restartButton').addEventListener('click', startGame);
-            document.getElementById('playAgainButton').addEventListener('click', function () {
+            document.getElementById('restartButton').addEventListener('click', function () {
                 score = 0;
                 timeLeft = 120;
                 document.getElementById('score').textContent = '0';
