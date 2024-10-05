@@ -55,7 +55,6 @@
 
         #startButton,
         #restartButton,
-        #playAgainButton,
         #homeButton {
             font-family: 'Luckiest Guy', cursive;
             font-size: xx-large;
@@ -139,10 +138,7 @@
             margin-bottom: 20px;
         }
 
-        #endingButtons {
-            display: flex;
-            gap: 20px;
-        }
+
 
         #musicToggle {
             position: fixed;
@@ -412,6 +408,25 @@
             animation: rotate1 2s linear infinite;
 
         }
+
+        #quitButton {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 20px;
+            background-color: rgba(162, 14, 61, 0.7);
+            border: 3px solid rgb(237, 237, 202);
+            border-radius: 10px;
+            color: rgb(237, 237, 202);
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #quitButton:hover {
+            background-color: rgba(162, 14, 61, 1);
+        }
     </style>
 </head>
 
@@ -442,6 +457,7 @@
     <div id="gameArea" style="display: none;">
         <img id="backgroundImage" src="assets/game-bg.jpg" alt="Background">
         <div id="info">Score: <span id="score">0</span> | Time: <span id="time">120</span></div>
+        <button id="quitButton">Quit</button>
     </div>
     <div id="endingPage">
         <div class="confetti">
@@ -468,8 +484,7 @@
         <div class="card">
 
             <div id="finalScore">Your Final Score: <span id="endScore"></span></div>
-            <div id="endingButtons">
-                <button id="restartButton">
+            <div style="display: flex;align-items: center;justify-content: center;"><button id="restartButton">
                     <img src="./assets/jim-jam.png" style="height: 25px;" alt="">
                     <span class="now">again!</span>
                     <span class="play">play</span>
@@ -479,7 +494,6 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const homeAudio = new Audio('./assets/Jim-Jam Stacking Game.mp3');
@@ -490,6 +504,7 @@
             const plateStack = [];
             let gameAudio;
             let isMusicPlaying = true;
+            let animationId;
 
             const musicToggle = document.getElementById('musicToggle');
 
@@ -535,6 +550,7 @@
             musicToggle.addEventListener('click', toggleMusic);
 
             function init() {
+                // Reset scene and camera when the game restarts
                 scene = new THREE.Scene();
                 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
                 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -562,6 +578,8 @@
                 setInterval(updateTimer, 1000);
 
                 window.addEventListener('resize', onWindowResize, false);
+
+                document.getElementById('quitButton').addEventListener('click', quitGame);
             }
 
             function createPlate() {
@@ -660,8 +678,23 @@
                 document.getElementById('endScore').textContent = score;
             }
 
+            function quitGame() {
+                gameAudio.pause();
+                if (isMusicPlaying) homeAudio.play();
+                document.getElementById('gameArea').style.display = 'none';
+                document.getElementById('endingPage').style.display = 'flex';
+                document.getElementById('endScore').textContent = score;
+
+                // Clean up the game state
+                scene.remove.apply(scene, scene.children);
+                fallingObjects = [];
+                plateStack.length = 0;
+                renderer.dispose();
+                cancelAnimationFrame(animationId);
+            }
+
             function animate(time) {
-                requestAnimationFrame(animate);
+                animationId = requestAnimationFrame(animate);
                 TWEEN.update(time);
 
                 fallingObjects.forEach((obj, index) => {
@@ -686,7 +719,7 @@
                             if (plateStack.length === 3) {
                                 const bell = new Audio('./assets/Bells Logo.wav')
                                 bell.play();
-                                score++;
+                                score += 100;
                                 document.getElementById('score').textContent = score;
 
                                 plateStack.forEach((stackObj, i) => {
@@ -755,17 +788,30 @@
                 animate();
             }
 
-            document.getElementById('startButton').addEventListener('click', startGame);
-            document.getElementById('restartButton').addEventListener('click', function () {
+            function resetGame() {
+                // Reset game variables
                 score = 0;
                 timeLeft = 120;
+
+                // Reset the score and time on the UI
                 document.getElementById('score').textContent = '0';
                 document.getElementById('time').textContent = '120';
+
+                // Clear any existing falling objects and plate stack
+                fallingObjects.forEach(obj => scene.remove(obj));
+                plateStack.forEach(obj => scene.remove(obj));
+                fallingObjects = [];
+                plateStack.length = 0;
+            }
+
+            document.getElementById('startButton').addEventListener('click', startGame);
+
+            document.getElementById('restartButton').addEventListener('click', function () {
+                // Reset the game state before restarting
+                console.log('here')
+                resetGame();
                 document.getElementById('endingPage').style.display = 'none';
                 startGame();
-            });
-            document.getElementById('homeButton').addEventListener('click', function () {
-                location.reload();
             });
         });
     </script>
