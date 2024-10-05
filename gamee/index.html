@@ -170,6 +170,8 @@
             margin: 10px;
             animation: slideIn 1s ease-out forwards;
             transform: translateY(100vh);
+            box-shadow: 8px 8px 16px #000,
+                -8px -8px 16px #000;
         }
 
         @keyframes slideIn {
@@ -378,6 +380,38 @@
                 transform: translateY(250px);
             }
         }
+
+        @keyframes jiggle {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.08);
+            }
+        }
+
+
+        #logo {
+            animation: jiggle 0.5s ease-in-out infinite alternate;
+        }
+
+
+        @keyframes rotate1 {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        .biscuit {
+            animation: rotate1 2s linear infinite;
+
+        }
     </style>
 </head>
 
@@ -387,7 +421,7 @@
     <div id="landingPage">
 
         <div style="text-align: center;" class="card">
-            <img src="./assets/logo.png" alt="Logo" style="height: 100px;">
+            <img src="./assets/logo.png" alt="Logo" id="logo" style="height: 70px;">
             <p>
                 Move your mouse or finger to control the plate at the bottom of the screen. <br><br>
                 Catch falling biscuit pieces in the correct order: base, cream, and top. <br><br>
@@ -398,7 +432,7 @@
             <br>
             <div style="display: flex;align-items: center;justify-content: center;">
                 <button id="startButton">
-                    <img src="./assets/jim-jam.png" style="height: 25px;" alt="">
+                    <img src="./assets/jim-jam.png" class="biscuit" style="height: 25px;" alt="">
                     <span class="now">now!</span>
                     <span class="play">play</span>
                 </button>
